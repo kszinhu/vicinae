@@ -16,14 +16,9 @@
 #include "ui/views/view-utils.hpp"
 
 namespace {
-QString cameraItemId(const QByteArray &deviceId) {
-  return QString::fromLatin1(
-      deviceId.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals));
-}
+constexpr auto CAMERA_STORAGE_KEY = "cameraDevice";
 
-QByteArray cameraDeviceId(const QString &itemId) {
-  return QByteArray::fromBase64(itemId.toLatin1(), QByteArray::Base64UrlEncoding);
-}
+QString cameraItemId(const QByteArray &deviceId) { return cameraDeviceStorageId(deviceId); }
 } // namespace
 
 OpenCameraViewHost::~OpenCameraViewHost() {
@@ -44,6 +39,11 @@ void OpenCameraViewHost::initialize() {
   m_camera = new QCamera(this);
   m_captureSession = new QMediaCaptureSession(this);
   m_captureSession->setCamera(m_camera);
+
+  const auto storedCamera = command()->storage().getItem(CAMERA_STORAGE_KEY);
+  if (!storedCamera.isUndefined() && !storedCamera.isNull()) {
+    m_preferredDeviceId = cameraDeviceIdFromStorage(storedCamera.toString());
+  }
 
   auto *navigation = context()->navigation.get();
   m_currentView = true;
@@ -98,11 +98,20 @@ void OpenCameraViewHost::detachVideoOutput(QObject *output) {
 }
 
 void OpenCameraViewHost::selectCamera(const QString &id) {
-  const auto deviceId = cameraDeviceId(id);
-  const auto devices = QMediaDevices::videoInputs();
-  const auto selected = std::ranges::find(devices, deviceId, &QCameraDevice::id);
+  const auto deviceId = cameraDeviceIdFromStorage(id);
+  if (!deviceId) return;
 
-  if (selected == devices.end() || m_selectedDeviceId == deviceId) return;
+  const auto devices = QMediaDevices::videoInputs();
+  const auto selected = std::ranges::find(devices, *deviceId, &QCameraDevice::id);
+  if (selected == devices.end()) return;
+
+  const bool deviceChanged = m_selectedDeviceId != deviceId;
+  const bool preferenceChanged = m_preferredDeviceId != deviceId;
+  if (!deviceChanged && !preferenceChanged) return;
+
+  m_preferredDeviceId = deviceId;
+  command()->storage().setItem(CAMERA_STORAGE_KEY, cameraDeviceStorageId(*deviceId));
+  if (!deviceChanged) return;
 
   stopCamera();
   m_selectedDeviceId = deviceId;
@@ -218,7 +227,7 @@ void OpenCameraViewHost::refreshCameras() {
   m_cameraModel.setItems(items);
 
   const auto selectedId =
-      selectCameraDeviceId(deviceIds, QMediaDevices::defaultVideoInput().id(), m_selectedDeviceId);
+      selectCameraDeviceId(deviceIds, QMediaDevices::defaultVideoInput().id(), m_preferredDeviceId);
   m_selectedDeviceId = selectedId;
 
   if (!selectedId) {

@@ -82,12 +82,22 @@ for key in com.apple.security.automation.apple-events \
   fi
 done
 for key in NSAppleEventsUsageDescription NSCalendarsFullAccessUsageDescription \
-           NSRemindersFullAccessUsageDescription NSContactsUsageDescription; do
+           NSRemindersFullAccessUsageDescription NSContactsUsageDescription \
+           NSCameraUsageDescription; do
   if ! /usr/libexec/PlistBuddy -c "Print :$key" "$APP/Contents/Info.plist" >/dev/null 2>&1; then
     echo "verify-dmg.sh: Info.plist is missing $key" >&2
     exit 1
   fi
 done
+
+if [[ ! -d "$APP/Contents/Frameworks/QtMultimedia.framework" ]]; then
+  echo "verify-dmg.sh: missing QtMultimedia.framework" >&2
+  exit 1
+fi
+if ! find "$APP/Contents/PlugIns/multimedia" -type f -name '*.dylib' -print -quit | grep -q .; then
+  echo "verify-dmg.sh: missing Qt Multimedia backend plugin" >&2
+  exit 1
+fi
 
 echo "==> image format plugins"
 for plugin in qicns qwebp qtiff qmacheif qgif qico qjpeg qsvg; do

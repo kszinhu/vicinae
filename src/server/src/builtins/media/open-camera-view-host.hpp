@@ -85,6 +85,7 @@ private:
   QMetaObject::Connection m_windowDestroyedConnection;
   QMetaObject::Connection m_windowVisibleConnection;
   std::optional<QByteArray> m_selectedDeviceId;
+  std::optional<QByteArray> m_preferredDeviceId;
   Qt::PermissionStatus m_permissionStatus = Qt::PermissionStatus::Undetermined;
   OpenCameraState m_state = OpenCameraState::AwaitingPermission;
   bool m_hasCameraError = false;

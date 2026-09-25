@@ -25,6 +25,7 @@ Item {
     property bool readOnly: false
     property bool hasError: false
     property bool filled: false
+    property alias preserveBackdrop: inputBackground.preserveBackdrop
 
     width: compact ? preferredWidth : implicitWidth
 
@@ -56,6 +57,7 @@ Item {
     }
 
     FormInputBackground {
+        id: inputBackground
         anchors.fill: triggerButton
         radius: triggerButton.radius
         filled: !root.flat && (root.filled || root.compact)

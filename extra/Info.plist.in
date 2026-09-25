@@ -53,6 +53,8 @@
 	<string>Vicinae uses Apple Events to list and run your Apple Shortcuts and perform system power actions such as restart, shut down, and log out.</string>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>Vicinae extensions can read and manage your calendar events.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Vicinae uses the camera only to show you a live preview before meetings.</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Vicinae extensions can read and manage your calendar events.</string>
 	<key>NSRemindersFullAccessUsageDescription</key>

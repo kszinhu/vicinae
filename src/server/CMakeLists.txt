@@ -1192,6 +1192,7 @@ set(VICINAE_QML_FILES
 	src/ui/qml/actions/ActionItemDelegate.qml
 	src/ui/qml/controls/SearchableDropdown.qml
 	src/ui/qml/views/ClipboardHistoryView.qml
+	src/ui/qml/views/OpenCameraView.qml
 	src/ui/qml/accessories/ClipboardFilterAccessory.qml
 	src/ui/qml/accessories/EmojiCategoryFilterAccessory.qml
 	src/ui/qml/detail/DetailPanel.qml
