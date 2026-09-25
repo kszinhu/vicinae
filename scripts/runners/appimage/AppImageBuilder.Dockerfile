@@ -31,6 +31,12 @@ RUN apt-get -y update &&	\
     libfontconfig1-dev		\
     libfreetype6-dev		\
     libglib2.0-dev			\
+    libavcodec-dev			\
+    libavformat-dev			\
+    libavutil-dev			\
+    libpulse-dev			\
+    libswresample-dev		\
+    libswscale-dev			\
     libx11-dev				\
     libxext-dev				\
     libxfixes-dev			\
@@ -89,7 +95,7 @@ ARG INSTALL_DIR=/usr/local
 RUN git clone --branch v${QT_VERSION} https://code.qt.io/qt/qt5.git /qt6
 WORKDIR /qt6
 
-RUN perl init-repository --module-subset=qtbase,qtsvg,qtwayland,qtdeclarative,qttools
+RUN perl init-repository --module-subset=qtbase,qtsvg,qtwayland,qtdeclarative,qtmultimedia,qttools
 
 # -feature-glib is needed for qtkeychain libsecret backend to not timeout
 # no-direct-extern-access: Qt exports its data with protected visibility and
@@ -305,6 +311,12 @@ RUN apt-get update \
 		wget				\
 		qtkeychain-qt6-dev	\
 		libsecret-1-dev		\
+		libavcodec-dev		\
+		libavformat-dev		\
+		libavutil-dev		\
+		libpulse-dev	\
+		libswresample-dev	\
+		libswscale-dev		\
 		libminizip-dev		\
 		squashfs-tools		\
 		ccache				\

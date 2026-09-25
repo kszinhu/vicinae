@@ -36,8 +36,21 @@ done
 # qtkeychain dlopens libsecret instead of linking it, so linuxdeploy can't see it in the
 # dependency tree and the host copy can't be loaded next to our bundled glib/openssl.
 # Without it qtkeychain silently falls back to kwallet or errors out (#1632).
-LIBSECRET=/usr/lib/$(uname -m)-linux-gnu/libsecret-1.so.0
+LIB_DIR=/usr/lib/$(uname -m)-linux-gnu
+LIBSECRET=$LIB_DIR/libsecret-1.so.0
 [ -e "$LIBSECRET" ] || die "$LIBSECRET not found: install libsecret-1-dev in the build image"
+
+MULTIMEDIA_LIBRARY_ARGS=()
+for lib in libavcodec libavformat libavutil libswresample libswscale; do
+	path=""
+	for candidate in "$LIB_DIR"/$lib.so.*; do
+		[ -e "$candidate" ] || continue
+		path=$candidate
+		break
+	done
+	[ -n "$path" ] || die "$lib runtime not found in $LIB_DIR"
+	MULTIMEDIA_LIBRARY_ARGS+=(--library "$path")
+done
 
 export QML_SOURCES_PATHS=$PWD/src/server/src/ui/qml
 export EXTRA_PLATFORM_PLUGINS=libqwayland.so
@@ -55,5 +68,20 @@ done
 
 linuxdeploy --appdir $APPDIR "${EXECUTABLE_ARGS[@]}" \
 	--library "$LIBSECRET" \
+	"${MULTIMEDIA_LIBRARY_ARGS[@]}" \
 	--desktop-file $APPDIR/usr/share/applications/vicinae.desktop \
 	--plugin qt --output appimage
+
+require_deployed() {
+pattern=$1
+label=$2
+find "$APPDIR/usr" -path "$pattern" -print -quit | grep -q . || die "$label was not deployed"
+}
+
+require_deployed '*/libQt6Multimedia.so*' 'Qt Multimedia library'
+require_deployed '*/plugins/multimedia/*.so' 'Qt Multimedia backend plugin'
+require_deployed '*/qml/QtMultimedia/qmldir' 'Qt Multimedia QML module'
+require_deployed '*/qml/QtMultimedia/*.so' 'Qt Multimedia QML plugin'
+for lib in libavcodec libavformat libavutil libswresample libswscale; do
+require_deployed "*/$lib.so.*" "$lib runtime"
+done

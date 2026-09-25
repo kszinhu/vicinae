@@ -113,6 +113,7 @@ in
         qt6.qtbase
         qt6.qtdeclarative
         qt6.qtimageformats
+        qt6.qtmultimedia
         qt6.qtsvg
         glaze
         numen

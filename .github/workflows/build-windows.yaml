@@ -61,7 +61,7 @@ jobs:
           host: windows
           target: desktop
           arch: win64_msvc2022_64
-          modules: qtshadertools qtimageformats
+          modules: qtshadertools qtimageformats qtmultimedia
           cache: true
 
       - name: Set up sccache
