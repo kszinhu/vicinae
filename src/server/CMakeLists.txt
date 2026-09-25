@@ -134,6 +134,9 @@ set(SRCS
 	src/builtins/screenshots/screenshot-grid-model.cpp
 	src/builtins/screenshots/screenshots-view-host.hpp
 	src/builtins/screenshots/screenshots-view-host.cpp
+	src/builtins/media/open-camera-state.hpp
+	src/builtins/media/open-camera-view-host.hpp
+	src/builtins/media/open-camera-view-host.cpp
 
 	src/internal/template-engine/template-engine.cpp
 	src/internal/glaze-qt.cpp
@@ -1406,6 +1409,7 @@ target_include_directories(${TARGET} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/src/builtins/shortcut
 	${CMAKE_CURRENT_SOURCE_DIR}/src/builtins/vicinae
 	${CMAKE_CURRENT_SOURCE_DIR}/src/builtins/clipboard/history
+	${CMAKE_CURRENT_SOURCE_DIR}/src/builtins/media
 	${CMAKE_CURRENT_SOURCE_DIR}/src/builtins/file
 	${CMAKE_CURRENT_SOURCE_DIR}/src/builtins/font
 	${CMAKE_CURRENT_SOURCE_DIR}/src/builtins/developer

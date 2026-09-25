@@ -1,5 +1,6 @@
 #pragma once
 #include <QCoreApplication>
+#include "builtins/media/open-camera-view-host.hpp"
 #include "command/command-database.hpp"
 #include "common/context.hpp"
 #include "services/audio-control/audio-control-service.hpp"
@@ -16,6 +17,20 @@
 namespace {
 
 const QColor MEDIA_COMMAND_TINT = QColor(128, 132, 138);
+
+class OpenCameraCommand : public BuiltinViewCommand<OpenCameraViewHost> {
+  Q_DECLARE_TR_FUNCTIONS(OpenCameraCommand)
+
+  QString id() const override { return "open-camera"; }
+  QString name() const override { return tr("Open Camera"); }
+  QString description() const override { return tr("Preview your camera before a meeting"); }
+  std::vector<QString> keywords() const override {
+    return {"camera", "webcam", "preview", "meeting", "video"};
+  }
+  ImageURL iconUrl() const override {
+    return ImageURL{BuiltinIcon::Camera}.setBackgroundTint(MEDIA_COMMAND_TINT);
+  }
+};
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_WIN)
 
@@ -335,6 +350,8 @@ class MediaExtension : public BuiltinCommandRepository {
 
 public:
   MediaExtension() {
+    registerCommand<OpenCameraCommand>();
+
     // only MPRIS is implemented for now, other platforms get the dummy backend
 #if defined(Q_OS_LINUX) || defined(Q_OS_WIN)
     registerCommand<NowPlayingCommand>();
