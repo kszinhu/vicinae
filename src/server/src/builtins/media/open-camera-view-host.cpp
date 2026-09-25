@@ -122,6 +122,12 @@ void OpenCameraViewHost::selectCamera(const QString &id) {
   synchronizeCamera();
 }
 
+void OpenCameraViewHost::selectPreviousCamera() { selectRelativeCamera(-1); }
+
+void OpenCameraViewHost::selectNextCamera() { selectRelativeCamera(1); }
+
+void OpenCameraViewHost::goBack() { popSelf(); }
+
 void OpenCameraViewHost::retry() {
   m_hasCameraError = false;
   requestPermission();
@@ -245,6 +251,18 @@ void OpenCameraViewHost::refreshCameras() {
   emit camerasChanged();
   updateState();
   synchronizeCamera();
+}
+
+void OpenCameraViewHost::selectRelativeCamera(int offset) {
+  const auto devices = QMediaDevices::videoInputs();
+  std::vector<QByteArray> deviceIds;
+  deviceIds.reserve(devices.size());
+  for (const auto &device : devices) {
+    deviceIds.emplace_back(device.id());
+  }
+
+  const auto selectedId = cycleCameraDeviceId(deviceIds, m_selectedDeviceId.value_or(QByteArray{}), offset);
+  if (selectedId) selectCamera(cameraDeviceStorageId(*selectedId));
 }
 
 void OpenCameraViewHost::updateState() {

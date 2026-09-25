@@ -36,6 +36,9 @@ public:
   Q_INVOKABLE void attachVideoOutput(QObject *output);
   Q_INVOKABLE void detachVideoOutput(QObject *output);
   Q_INVOKABLE void selectCamera(const QString &id);
+  Q_INVOKABLE void selectPreviousCamera();
+  Q_INVOKABLE void selectNextCamera();
+  Q_INVOKABLE void goBack();
   Q_INVOKABLE void retry();
 
 signals:
@@ -67,6 +70,7 @@ public:
 private:
   void requestPermission();
   void refreshCameras();
+  void selectRelativeCamera(int offset);
   void updateState();
   void synchronizeCamera();
   void stopCamera();

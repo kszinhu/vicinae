@@ -50,6 +50,19 @@ inline std::optional<QByteArray> selectCameraDeviceId(std::span<const QByteArray
   return std::nullopt;
 }
 
+inline std::optional<QByteArray> cycleCameraDeviceId(std::span<const QByteArray> deviceIds,
+                                                     const QByteArray &currentDeviceId, int offset) {
+  if (deviceIds.empty()) return std::nullopt;
+
+  const auto current = std::ranges::find(deviceIds, currentDeviceId);
+  if (current == deviceIds.end()) return deviceIds.front();
+
+  const auto count = static_cast<std::ptrdiff_t>(deviceIds.size());
+  const auto currentIndex = current - deviceIds.begin();
+  const auto nextIndex = (currentIndex + offset % count + count) % count;
+  return deviceIds[static_cast<std::size_t>(nextIndex)];
+}
+
 constexpr bool shouldCameraBeActive(bool currentView, bool windowVisible, bool outputAttached,
                                     OpenCameraState state) {
   const bool cameraUsable = state == OpenCameraState::Starting || state == OpenCameraState::Ready;

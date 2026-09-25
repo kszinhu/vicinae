@@ -105,6 +105,20 @@ Item {
         layer.enabled: true
     }
 
+    ViciButton {
+        z: 2
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.margins: root.controlInset
+        width: 28
+        height: 28
+        radius: 6
+        iconSource: Img.icon(BuiltinIcon.ArrowLeft)
+        accessibleName: qsTr("Back")
+        variant: "tinted"
+        onClicked: root.host.goBack()
+    }
+
     SearchableDropdown {
         id: cameraSelector
         z: 2
@@ -118,6 +132,18 @@ Item {
         currentItem: root.host.selectedCamera
         visible: root.host.hasMultipleCameras
         onActivated: item => root.host.selectCamera(item.id)
+    }
+
+    Shortcut {
+        sequence: "Ctrl+Up"
+        enabled: root.visible && root.host.hasMultipleCameras
+        onActivated: root.host.selectPreviousCamera()
+    }
+
+    Shortcut {
+        sequence: "Ctrl+Down"
+        enabled: root.visible && root.host.hasMultipleCameras
+        onActivated: root.host.selectNextCamera()
     }
 
     Component.onCompleted: root.updateOutputAttachment()
